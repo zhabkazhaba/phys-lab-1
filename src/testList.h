@@ -15,7 +15,7 @@ private:
     float mass;
     float radius;
 
-    float impulse;
+    float inertia;
 public:
     testList();
     testList(testList& o);
@@ -31,9 +31,12 @@ public:
     void setMass(float m);
     void setRadius(float r);
     void addTimeValue(float time);
-    std::pair<int, float> calculateImpulse();
+    std::pair<int, float> deleteTimeValue(std::size_t index);
+    void clearTimeValues();
+    std::pair<int, float> calculateInertia();
+    std::pair<int, float> calculateAbsoluteError();
     /**
-     * @brief Overloaded operator that returns sum of impulses
+     * @brief Overloaded operator that returns sum of inertia of two testList objects
      */
     float operator +(testList &o) const;
 };

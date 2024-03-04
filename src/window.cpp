@@ -1,6 +1,4 @@
 #include <numeric>
-#include <cstdlib>
-#include <complex>
 #include <iostream>
 #include "window.h"
 #include "utilityFuncs.hpp"
@@ -20,9 +18,12 @@ Window::Window() {
     t.tmp_conv2 = 0.0f;
     t.tmp_conv3 = 0.0f;
     t.tmp_conv4 = 0.0f;
-    t.tmp_pair = std::make_pair(0, 0.0f);
+    t.tmp_del = 0.0f;
+    t.tmp_pair1 = std::make_pair(0, 0.0f);
+    t.tmp_pair2 = std::make_pair(0, 0.0f);
+    t.tmp_pair3 = std::make_pair(0, 0.0f);
     msg.message = "Welcome!";
-    msg.color = colors[INF];
+    msg.color = t_colors[INF];
 }
 
 Window* Window::initializeWindow() {
@@ -34,7 +35,7 @@ Window* Window::initializeWindow() {
 
 void Window::sendMessage(const std::string &message, INF_TYPE color) {
     msg.message = message;
-    msg.color = colors[color];
+    msg.color = t_colors[color];
 }
 
 int Window::runWindow() {
@@ -201,6 +202,32 @@ int Window::runWindow() {
 
                 ImGui::EndTabItem();
             }
+
+            if (ImGui::BeginTabItem("Delete")) {
+                if (ImGui::Button("Delete last time value")) {
+                    t.tmp_pair2 = testList1.deleteTimeValue(testList1.getSize() - 1);
+                    if (t.tmp_pair2.first == 1)
+                        sendMessage("Error: No time values to delete", ERR);
+                    else
+                        sendMessage("Last time value is deleted", SUCCESS);
+                }
+                if (ImGui::Button("Clear all time values")) {
+                    testList1.clearTimeValues();
+                    sendMessage("All time values are cleared", SUCCESS);
+                }
+                ImGui::SeparatorText("Delete by index");
+                ImGui::InputFloat("Enter index", &t.tmp_del);
+                if (ImGui::Button("Delete by index")) {
+                    t.tmp_pair2 = testList1.deleteTimeValue((std::size_t) t.tmp_del);
+                    if (t.tmp_pair2.first == 1)
+                        sendMessage("Error: Index out of range", ERR);
+                    else
+                        sendMessage("Time value is deleted", SUCCESS);
+                }
+                ImGui::SeparatorText("Last deleted value");
+                ImGui::Text("Value: %f", t.tmp_pair2.second);
+                ImGui::EndTabItem();
+            }
             ImGui::EndTabBar();
         }
         /* ImGui::SeparatorText("Guide");
@@ -232,11 +259,11 @@ int Window::runWindow() {
             }
             if (ImGui::BeginTabItem("Other")) {
                 ImGui::SeparatorText("Mass");
-                ImGui::Text("Mass: %f kg", testList1.getMass());
+                ImGui::Text("Mass: %.4f kg", testList1.getMass());
                 ImGui::SeparatorText("Radius");
-                ImGui::Text("Radius: %f m", testList1.getRadius());
+                ImGui::Text("Radius: %.4f m", testList1.getRadius());
                 ImGui::SeparatorText("Height");
-                ImGui::Text("Height: %f m", testList1.getHeight());
+                ImGui::Text("Height: %.4f m", testList1.getHeight());
                 ImGui::EndTabItem();
             }
 
@@ -258,21 +285,31 @@ int Window::runWindow() {
                     if (testList1.getSize() == 0) {
                         sendMessage("Error: No data to calculate", ERR);
                     } else {
-                        t.tmp_pair = testList1.calculateImpulse();
-                        if (t.tmp_pair.first == 1)
+                        t.tmp_pair1 = testList1.calculateInertia();
+                        if (t.tmp_pair1.first == 1)
                             sendMessage("Error: No time values", ERR);
-                        else if (t.tmp_pair.first == 2)
+                        else if (t.tmp_pair1.first == 2)
                             sendMessage("Error: Mass is 0", ERR);
                         else {
-                            t.tmp5 = t.tmp_pair.second;
+                            t.tmp5 = t.tmp_pair1.second;
                             sendMessage("Calculation is done", SUCCESS);
                         }
+
+                        t.tmp_pair3 = testList1.calculateAbsoluteError();
+                        if (t.tmp_pair3.first == 1)
+                            sendMessage("Error: Not enough data for calculating error", ERR);
                     }
                 }
                 ImGui::SeparatorText("Number of time values");
                 ImGui::Text("N: %zu", testList1.getSize());
-                ImGui::SeparatorText("Impulse");
-                ImGui::Text("Impulse: %f", t.tmp5);
+                ImGui::SeparatorText("Inertia");
+                ImGui::Text("Inertia: %.3f kg*mm^2", t.tmp5);
+                ImGui::SeparatorText("Error values");
+                ImGui::Text("Absolute error: %.3f", t.tmp_pair3.second);
+                ImGui::Text("Relative error: %.2f %%", t.tmp_pair3.second / t.tmp5 * 100);
+                ImGui::SeparatorText("Total value");
+                ImGui::TextColored(t_colors[SUCCESS], "J = %.3f +- %.3f kg*mm^2", t.tmp5, t.tmp_pair3.second);
+
                 ImGui::EndTabItem();
             }
             ImGui::EndTabBar();

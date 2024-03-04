@@ -18,7 +18,7 @@ private:
         ERR     = 2
     };
 
-    const static inline ImVec4 colors[] = {
+    const static inline ImVec4 t_colors[] = {
             ImVec4(1.0f, 1.0f, 1.0f, 1.0f), // WHITE
             ImVec4(0.0f, 1.0f, 0.0f, 1.0f), // GREEN
             ImVec4(1.0f, 0.0f, 0.0f, 1.0f)  // RED
@@ -39,7 +39,10 @@ private:
         float tmp_conv2;
         float tmp_conv3;
         float tmp_conv4;
-        std::pair<int, float> tmp_pair;
+        float tmp_del;
+        std::pair<int, float> tmp_pair1;
+        std::pair<int, float> tmp_pair2;
+        std::pair<int, float> tmp_pair3;
     } t;
     struct {
         std::string message;

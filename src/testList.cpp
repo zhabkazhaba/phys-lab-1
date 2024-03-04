@@ -9,7 +9,7 @@ testList::testList() {
     radius = 0.0f;
     height = 0.0f;
     av_time_value = 0.0f;
-    impulse = 0.0f;
+    inertia = 0.0f;
 }
 
 testList::testList(testList &o) {
@@ -17,7 +17,7 @@ testList::testList(testList &o) {
     radius = o.radius;
     height = o.height;
     av_time_value = o.av_time_value;
-    impulse = o.impulse;
+    inertia = o.inertia;
 }
 
 size_t testList::getSize() {
@@ -78,7 +78,20 @@ void testList::addTimeValue(float time) {
     time_values.push_back(time);
 }
 
-std::pair<int,float> testList::calculateImpulse() {
+std::pair<int,float> testList::deleteTimeValue(std::size_t index) {
+    if (index >= time_values.size()) {
+        return {1, 0.0f}; // Error code 1: index out of range
+    }
+    float tmp = time_values[index];
+    time_values.erase(time_values.begin() + index);
+    return {0, tmp};
+}
+
+void testList::clearTimeValues() {
+    time_values.clear();
+}
+
+std::pair<int,float> testList::calculateInertia() {
     if (time_values.empty())
         return {1, 0}; // Error code 1: no time values
     if (mass == 0)
@@ -87,10 +100,18 @@ std::pair<int,float> testList::calculateImpulse() {
     av_time_value = std::accumulate(time_values.begin(), time_values.end(), 0.0f) / (float) (time_values.size());
     tmp_impulse = (mass * radius * radius * (g_acceleration * av_time_value * av_time_value - 2 * height))
                   / (2 * height);
-    impulse = tmp_impulse;
+    inertia = tmp_impulse;
     return {0, tmp_impulse};
 }
 
+std::pair<int, float> testList::calculateAbsoluteError() {
+    if (time_values.empty() || mass == 0 || radius == 0 || height == 0) {
+        return {1, 0}; // Error code 1: Not enough data
+    }
+    float absolute_error = (0.001/mass) + (0.1/radius) + (0.01/av_time_value) + (0.0005/height); //NOLINT
+    return {0, absolute_error};
+}
+
 float testList::operator+(testList &o) const {
-    return impulse + o.impulse;
+    return inertia + o.inertia;
 }
