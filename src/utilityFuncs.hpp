@@ -15,6 +15,14 @@ namespace util {
     inline float convertMetersToMillimeters(float m) {
         return m * 1000.0f;
     }
+
+    inline float convertGramsToKilograms(float g) {
+        return g * 0.001f;
+    }
+
+    inline float convertKilogramsToGrams(float kg) {
+        return kg * 1000.0f;
+    }
 }
 
 #endif //PHYS_LAB_1_UTILITYFUNCS_HPP
