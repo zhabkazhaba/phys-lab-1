@@ -1,6 +1,6 @@
 #include <numeric>
 #include "testList.h"
-#include <numeric>
+#include "utilityFuncs.hpp"
 #include <stdexcept>
 #include <algorithm>
 
@@ -91,24 +91,32 @@ void testList::clearTimeValues() {
     time_values.clear();
 }
 
+float testList::calculateAvTime() {
+    if (time_values.empty())
+        return 0.0f;
+    av_time_value = std::accumulate(time_values.begin(), time_values.end(), 0.0f) / (float) (time_values.size());
+    return av_time_value;
+}
+
 std::pair<int,float> testList::calculateInertia() {
     if (time_values.empty())
         return {1, 0}; // Error code 1: no time values
     if (mass == 0)
         return {2, 0}; // Error code 2: mass is 0
     float tmp_impulse;
-    av_time_value = std::accumulate(time_values.begin(), time_values.end(), 0.0f) / (float) (time_values.size());
+    calculateAvTime();
     tmp_impulse = (mass * radius * radius * (g_acceleration * av_time_value * av_time_value - 2 * height))
                   / (2 * height);
     inertia = tmp_impulse;
     return {0, tmp_impulse};
 }
 
-std::pair<int, float> testList::calculateAbsoluteError() {
+std::pair<int, double> testList::calculateAbsoluteError() {
     if (time_values.empty() || mass == 0 || radius == 0 || height == 0) {
         return {1, 0}; // Error code 1: Not enough data
     }
-    float absolute_error = (0.001/mass) + (0.1/radius) + (0.01/av_time_value) + (0.0005/height); //NOLINT
+    calculateAvTime();
+    double absolute_error = (0.001/mass) + (0.1/util::convertMetersToMillimeters(radius)) + (0.01/av_time_value) + (0.0005/height); //NOLINT
     return {0, absolute_error};
 }
 

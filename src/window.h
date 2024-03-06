@@ -39,10 +39,10 @@ private:
         float tmp_conv2;
         float tmp_conv3;
         float tmp_conv4;
-        float tmp_del;
+        int tmp_del;
         std::pair<int, float> tmp_pair1;
         std::pair<int, float> tmp_pair2;
-        std::pair<int, float> tmp_pair3;
+        std::pair<int, double> tmp_pair3;
     } t;
     struct {
         std::string message;

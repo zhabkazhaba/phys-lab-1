@@ -33,8 +33,9 @@ public:
     void addTimeValue(float time);
     std::pair<int, float> deleteTimeValue(std::size_t index);
     void clearTimeValues();
+    float calculateAvTime();
     std::pair<int, float> calculateInertia();
-    std::pair<int, float> calculateAbsoluteError();
+    std::pair<int, double> calculateAbsoluteError();
     /**
      * @brief Overloaded operator that returns sum of inertia of two testList objects
      */

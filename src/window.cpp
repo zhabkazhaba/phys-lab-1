@@ -18,7 +18,7 @@ Window::Window() {
     t.tmp_conv2 = 0.0f;
     t.tmp_conv3 = 0.0f;
     t.tmp_conv4 = 0.0f;
-    t.tmp_del = 0.0f;
+    t.tmp_del = 0;
     t.tmp_pair1 = std::make_pair(0, 0.0f);
     t.tmp_pair2 = std::make_pair(0, 0.0f);
     t.tmp_pair3 = std::make_pair(0, 0.0f);
@@ -216,13 +216,17 @@ int Window::runWindow() {
                     sendMessage("All time values are cleared", SUCCESS);
                 }
                 ImGui::SeparatorText("Delete by index");
-                ImGui::InputFloat("Enter index", &t.tmp_del);
+                ImGui::InputInt("Enter index", &t.tmp_del);
                 if (ImGui::Button("Delete by index")) {
-                    t.tmp_pair2 = testList1.deleteTimeValue((std::size_t) t.tmp_del);
-                    if (t.tmp_pair2.first == 1)
-                        sendMessage("Error: Index out of range", ERR);
-                    else
-                        sendMessage("Time value is deleted", SUCCESS);
+                    if (t.tmp_del < 0)
+                        sendMessage("Error: Negative index", ERR);
+                    else {
+                        t.tmp_pair2 = testList1.deleteTimeValue((std::size_t) t.tmp_del);
+                        if (t.tmp_pair2.first == 1)
+                            sendMessage("Error: Index out of range", ERR);
+                        else
+                            sendMessage("Time value is deleted", SUCCESS);
+                    }
                 }
                 ImGui::SeparatorText("Last deleted value");
                 ImGui::Text("Value: %f", t.tmp_pair2.second);
